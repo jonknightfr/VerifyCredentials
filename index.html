@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Ping Neo Demonstration</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css"
+    />
+    <script
+      src="https://code.jquery.com/jquery-3.6.0.min.js"
+      integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
+      crossorigin="anonymous"
+    ></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment-with-locales.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.qrcode/1.0/jquery.qrcode.min.js"></script>
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+      integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+      crossorigin="anonymous"
+    />
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css"
+      integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp"
+      crossorigin="anonymous"
+    />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300&display=swap"
+      rel="stylesheet"
+    />
+
+    <link rel="stylesheet" href="style.css" />
+
+    <style>
+      body {
+        font-family: "Open Sans";
+      }
+    </style>
+
+    <script>
+      // START OF CONFIG
+
+      /*
+      var CONFIG = {
+        name: "PingOne",
+        authEndPoint: "https://auth.pingone.eu",
+        apiEndPoint: "https://api.pingone.eu/v1",
+        envId: "8dafdf72-bcb0-4f82-bc52-31b908396cf5",
+        scope: "openid",
+        client: {
+          id: "2dc6ea75-5212-4f50-8bfe-6311d776601d",
+          secret: "~kttoT7qC49LL.s3Q9rm55_kPrEvtqoWOAgYrH-1IvhEM8lQw7sRMlGQ50kJQ9.R",
+        },
+        davinci: {
+          policy: "a95a2ae3e2b4d7cecde8850ed6311849",
+          clientid: "30501e29b35ea22f3d3bc36f2793de4a",
+        },  
+        credentialType: "NatWest Current Account", // "Your Digital ID from NatWest" or "Driving License"
+        protocol: "NATIVE", // "NATIVE" or "OPENID4VP"
+        digitalWalletAppId: "a924f080-fc4b-4ca7-9b42-5618b0cff825"        
+      };
+      */
+      
+      
+      var CONFIG = {
+        name: "PingOne",
+        authEndPoint: "https://auth.pingone.eu",
+        apiEndPoint: "https://api.pingone.eu/v1",
+        envId: "e50a2778-9c5e-4fdd-93c6-877f68849e25",
+        scope: "openid",
+        client: {
+          id: "58dfbbac-2207-4722-848d-96354cdca521",
+          secret: "t0A2Ro1Rkmi0TrX~YyXjlcO.gO_th.RrCI8jw.4xG7n-SrCfmvUC-1KRU_ZaVcTp",
+        },
+        davinci: {
+          policy: "a95a2ae3e2b4d7cecde8850ed6311849",
+          clientid: "30501e29b35ea22f3d3bc36f2793de4a",
+        },  
+        credentialType: "BX Resources", // "Your Digital ID from NatWest" or "Driving License"
+        protocol: "NATIVE", // "NATIVE" or "OPENID4VP"
+        digitalWalletAppId: "706a8b62-33bd-41d5-a288-33a20b6e6a57"       
+      };      
+      
+      
+
+      function syntaxHighlight(json) {
+        json = json
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;");
+        return json.replace(
+          /("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g,
+          function (match) {
+            var cls = "number";
+            if (/^"/.test(match)) {
+              if (/:$/.test(match)) {
+                cls = "key";
+              } else {
+                cls = "string";
+              }
+            } else if (/true|false/.test(match)) {
+              cls = "boolean";
+            } else if (/null/.test(match)) {
+              cls = "null";
+            }
+            if (match.length > 48) match = match.substring(0, 47) + ' ..."';
+            return '<span class="' + cls + '">' + match + "</span>";
+          }
+        );
+      }
+
+      function isJson(json) {
+        if (typeof json === "number") {
+          var now = Number(Date.now() / 1000);
+          if (Math.abs(now - json) < 20000) {
+            json =
+              json +
+              " (" +
+              moment.unix(json).format("YYYY-MM-DD HH:mm:ss") +
+              ")";
+          }
+        }
+
+        if (typeof json === "object") {
+          try {
+            var str = syntaxHighlight(JSON.stringify(json, null, 2));
+            return '<pre style="white-space:pre-wrap;">' + str + "</pre>";
+          } catch (e) {
+            return json;
+          }
+        } else
+          try {
+            var json = JSON.parse(json);
+            return isJson(json);
+          } catch (e) {
+            return (
+              '<pre style="white-space:pre-wrap;">' +
+              decodeURIComponent(escape(json)) +
+              "</pre>"
+            );
+          }
+      }
+
+      async function clipboard(text) {
+        try {
+          await navigator.clipboard.writeText(decodeURI(text));
+          console.log("Content copied to clipboard");
+        } catch (err) {
+          console.error("Failed to copy: ", err);
+        }
+      }
+
+      function verifyCredentials() {
+        var credType = document.getElementById("credentialType").value;
+        var at = getAccessToken();
+        console.log(at + " " + credType);
+        verificationPresentation(at, credType);
+      }
+
+      function verificationPresentation(at, credType) {
+        var xmlhttp = new XMLHttpRequest();
+        xmlhttp.open(
+          "POST",
+          `${CONFIG.apiEndPoint}/environments/${CONFIG.envId}/presentationSessions`,
+          false
+        );
+        xmlhttp.setRequestHeader("Content-type", "application/json");
+        xmlhttp.setRequestHeader("Authorization", "Bearer " + at);
+        var payload = {
+          "protocol": CONFIG.protocol,
+          "digitalWalletApplication": {
+              "id": CONFIG.digitalWalletAppId
+          },
+          "requestedCredentials": [
+              {
+                  "keys": [],
+                  "type": credType
+              }
+          ],
+          "message": "Please present the requested verifiable credential."
+        };
+        xmlhttp.send(JSON.stringify(payload));
+        
+        console.log(xmlhttp.responseText);
+
+        try {
+          var json = JSON.parse(xmlhttp.responseText);
+    
+          var qr = json._links.appOpenUrl.href;
+          $('#credentialCard').html("");
+          $('#credentialCard').qrcode({ text: qr });
+
+          setTimeout(function () {
+            pollForCredential(at, json.id);
+          }, 4000);
+        } catch (e) {
+          console.log(
+            "Error getting credential presentation: " + xmlhttp.responseText
+          );
+        }
+      }
+
+      function pollForCredential(at, id) {
+        var xmlhttp = new XMLHttpRequest();
+        xmlhttp.open(
+          "GET",
+          `${CONFIG.apiEndPoint}/environments/${CONFIG.envId}/presentationSessions/${id}/credentialData`,
+          false
+        );
+        xmlhttp.setRequestHeader("Content-type", "application/json");
+        xmlhttp.setRequestHeader("Authorization", "Bearer " + at);
+        xmlhttp.send(null);
+        console.log(xmlhttp.responseText);
+
+        try {
+          var json = JSON.parse(xmlhttp.responseText);
+          if (json.status == "INITIAL" || json.status == "WAITING") {
+            setTimeout(function () {
+              pollForCredential(at, id);
+            }, 4000);
+          } else if (json.status == "VERIFICATION_SUCCESSFUL" || json.status == "VERIFICATION_FAILED") {
+            var html = (json.status == "VERIFICATION_FAILED") ? "<h1>⚠️ Credential revoked, expired or invalid.</h1><br>" : "";
+            for (i = 0; i < json.sessionData.credentialsDataList.length; i++) {
+              var cred = json.sessionData.credentialsDataList[i];
+              for (j = 0; j < cred.data.length; j++) {
+                console.log(cred.data[j].key);
+                if (cred.data[j].key == "CardImage")
+                  html += `<div>${cred.data[j].value}</div>`;
+                if (cred.data[j].key == "First Name")
+                  document.getElementById(
+                    "persona"
+                  ).innerHTML = `Persona: ${cred.data[j].value}`;
+              }
+
+              var str = syntaxHighlight(JSON.stringify(cred, null, 2));
+              document.getElementById("credentialData").innerHTML =
+                '<pre style="white-space:pre-wrap;">' + str + "</pre>";
+            }
+            document.getElementById("credentialCard").innerHTML = html;
+          } else {
+            console.log("Unknown status: " + xmlhttp.responseText);
+          }
+        } catch (e) {
+          console.log("Error polling credential data: " + xmlhttp.responseText);
+        }
+      }
+
+      function getAccessToken() {
+        var xmlhttp = new XMLHttpRequest();
+        xmlhttp.open(
+          "POST",
+          `${CONFIG.authEndPoint}/${CONFIG.envId}/as/token`,
+          false
+        );
+        xmlhttp.setRequestHeader(
+          "Content-type",
+          "application/x-www-form-urlencoded"
+        );
+        xmlhttp.send(
+          `grant_type=client_credentials&client_id=${CONFIG.client.id}&client_secret=${CONFIG.client.secret}&scope=${CONFIG.scope}`
+        );
+        try {
+          var json = JSON.parse(xmlhttp.responseText);
+          return json.access_token;
+        } catch (e) {
+          console.log("Error getting access token: " + xmlhttp.responseText);
+        }
+        return null;
+      }
+      
+      
+      function getCredentialTypes() {
+        var at = getAccessToken();
+        var xmlhttp = new XMLHttpRequest();
+        xmlhttp.open(
+          "GET",
+          `${CONFIG.apiEndPoint}/environments/${CONFIG.envId}/credentialTypes`,
+          false
+        );
+        xmlhttp.setRequestHeader("Content-type", "application/json");
+        xmlhttp.setRequestHeader("Authorization", "Bearer " + at);
+        xmlhttp.send(null);
+        console.log(xmlhttp.responseText);
+        var json = JSON.parse(xmlhttp.responseText);
+        var html = "";
+        json._embedded.items.forEach(item => {
+          html += `<option value="${item.cardType}">${item.cardType}</option>`;
+        });
+        document.getElementById("credentialType").innerHTML = html;
+        $('#credentialCard').html("");
+        $('#credentialData').html("");
+
+      }
+      
+    </script>
+  </head>
+
+  <body>
+    <nav role="navigation" class="navbar navbar-default navbar-fixed-top">
+      <div class="container-fluid">
+        <div class="navbar-header" style="min-width: 768px">
+          <div class="col-md-4">
+            <img src="logo.png" height="20px" />
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <div class="jumbotron">
+      <div class="container">
+        <br />
+        <div class="col-sm-8">
+          <h1 style="font-size: 36pt">Verifiable Credentials Demo</h1>
+          <p>An example of requesting and verifying wallet credentials</p>
+          <p id="persona">Persona: unknown</p>
+        </div>
+        <div class="col-sm-4">
+          <br />
+          <img width="100" id="logo" src="" />
+        </div>
+      </div>
+    </div>
+
+    <div class="container-fluid">
+      <div class="row justify-content-center">
+        <div class="col-sm-6">
+          <div class="row">
+            <h2 class="page-header">
+              Verifiable Credentials
+              <script>
+                  document.write(
+                    `<a class="btn btn-danger float-end" href="${CONFIG.authEndPoint}/${CONFIG.envId}/davinci/policy/${CONFIG.davinci.policy}/authorize?client_id=${CONFIG.davinci.clientid}&response_type=code&scope=openid&redirect_uri=https://httpbin.org" target="_blank">Pair Wallet</a>`
+                  );
+              </script>
+              <a
+                class="btn btn-danger float-end"
+                 style="margin-right:10px;"                 
+                href="https://install.appcenter.ms/orgs/ping_wallet/apps/ios-wallet-sample/distribution_groups/ping%20internal%20testers"
+                target="_blank"
+              >
+                Download Wallet App
+              </a>              
+            </h2>
+            <div class="well">
+              <label for="credentialType">Credential Types</label>
+              <button class="btn btn-sm btn-danger m-3" onclick="getCredentialTypes()">
+                Refresh
+              </button>
+              <select
+                name="credentialType"
+                id="credentialType"
+                class="form-select form-select-lg mb-3"
+                aria-label="Select Credential Type"
+              >
+              </select>
+              <button
+                class="btn btn-sm btn-danger"
+                onclick="verifyCredentials()"
+              >
+                Verify Credentials
+              </button>
+              <hr />
+              <div class="row">
+                <div class="col-sm-6">
+                  <div id="credentialCard"></div>
+                </div>
+                <div class="col-sm-6">
+                  <div id="credentialData"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

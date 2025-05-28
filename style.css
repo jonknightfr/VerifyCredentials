@@ -1,0 +1,30 @@
+div.jumbotron {
+  background-image: url('background.png');
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-size: cover;
+}
+
+.badge-unsigned {
+  background-color: orange;
+  color: white;
+  padding: 4px 8px;
+  text-align: center;
+  border-radius: 5px;
+}
+
+.btn-xsm {
+  padding: 2px 4px;
+  font-size: 12px;
+  border:none;
+  margin-right:10px;  
+}
+
+pre {outline: 1px solid #ccc; padding: 5px; margin: 5px; text-align:left;} 
+.string { color: green; } 
+.number { color: darkorange; } 
+.boolean { color: blue; } 
+.null { color: magenta; } 
+.key { color: red; }
+
+svg {width: 480px; height: auto;}
