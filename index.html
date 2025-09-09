@@ -230,10 +230,12 @@
                 console.log(cred.data[j].key);
                 if (cred.data[j].key == "CardImage")
                   html += `<div>${cred.data[j].value}</div>`;
-                if ( cred.data[j].key.toLowerCase() in [ "first name", "given name" ] )
+                if ( [ "first name", "given name" ].includes(cred.data[j].key.toLowerCase()) ) {
+                  console.log(cred.data[j].key.toLowerCase());
                   document.getElementById(
                     "persona"
                   ).innerHTML = `Persona: ${cred.data[j].value}`;
+                }
               }
 
               var str = syntaxHighlight(JSON.stringify(cred, null, 2));
@@ -304,7 +306,7 @@
       <div class="container-fluid">
         <div class="navbar-header" style="min-width: 768px">
           <div class="col-md-4">
-            <img src="antwerp.png" height="40px" />
+            <img src="logo.png" height="20px" />
           </div>
         </div>
       </div>
@@ -320,7 +322,7 @@
         </div>
         <div class="col-sm-4">
           <br />
-          <img width="100" id="logo" src="" />
+          <img width="300" id="logo" src="antwerp.png" />
         </div>
       </div>
     </div>
@@ -330,7 +332,7 @@
         <div class="col-sm-6">
           <div class="row">
             <h2 class="page-header">
-              Verifiable Credentials
+              Verify Credentials
               <script>
                   document.write(
                     `<a class="btn btn-danger float-end" href="${CONFIG.authEndPoint}/${CONFIG.envId}/davinci/policy/${CONFIG.davinci.policy}/authorize?client_id=${CONFIG.davinci.clientid}&response_type=code&scope=openid&redirect_uri=https://httpbin.org" target="_blank">Pair Wallet</a>`
