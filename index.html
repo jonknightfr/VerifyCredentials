@@ -230,7 +230,7 @@
                 console.log(cred.data[j].key);
                 if (cred.data[j].key == "CardImage")
                   html += `<div>${cred.data[j].value}</div>`;
-                if (cred.data[j].key == "First Name")
+                if ( cred.data[j].key.toLowerCase() in [ "first name", "given name" ] )
                   document.getElementById(
                     "persona"
                   ).innerHTML = `Persona: ${cred.data[j].value}`;
@@ -304,7 +304,7 @@
       <div class="container-fluid">
         <div class="navbar-header" style="min-width: 768px">
           <div class="col-md-4">
-            <img src="logo.png" height="20px" />
+            <img src="antwerp.png" height="40px" />
           </div>
         </div>
       </div>
@@ -314,8 +314,8 @@
       <div class="container">
         <br />
         <div class="col-sm-8">
-          <h1 style="font-size: 36pt">Verifiable Credentials Demo</h1>
-          <p>An example of requesting and verifying wallet credentials</p>
+          <h1 style="font-size: 36pt">Port of Antwerp Bruges</h1>
+          <p>Consignment release confirmation</p>
           <p id="persona">Persona: unknown</p>
         </div>
         <div class="col-sm-4">
