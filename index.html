@@ -385,9 +385,8 @@
 
     <!-- Embed the chatbot -->
 
-<!-- 2) A fixed container in the corner -->
+<!-- 2) Style for popup container -->
 <style>
-  /* Adjust size to taste */
   #n8n-chat-popup {
     position: fixed;
     right: 20px;
@@ -401,20 +400,16 @@
 <!-- 3) Mount point -->
 <div id="n8n-chat-popup"></div>
 
-<!-- 4) Load the widget and init in "window" mode (popup) -->
+<!-- 4) Load the widget and init in "window" (popup) mode -->
 <script type="module">
   import { createChat } from 'https://cdn.jsdelivr.net/npm/@n8n/chat/dist/chat.bundle.es.js';
 
   createChat({
-    target: '#n8n-chat-popup',   // mount into our fixed corner div
-    mode: 'window',              // shows a floating toggle + popup panel
+    target: '#n8n-chat-popup',
+    mode: 'window',   // floating launcher + popup window
     webhookUrl: 'https://mysyree.app.n8n.cloud/webhook/2bee71c0-4f76-44b7-9850-9b6cffcfdc9b/chat',
-
-    // Optional niceties:
-    showWelcomeScreen: true,
-    // loadPreviousSession: true,
-    // enableStreaming: true,     // if you enabled streaming in the node
-    // metadata: { source: 'site' }
+    showWelcomeScreen: false,   // disables the default "Hi, I'm Nathan" greeting
+    loadPreviousSession: true   // optional: keep past chat history
   });
 </script>
 
