@@ -385,31 +385,78 @@
 
     <!-- Embed the chatbot -->
 
-<!-- 2) Style for popup container -->
 <style>
+  :root {
+    /* core colours */
+    --chat--color-primary: #7c5cff;            /* accents & launcher */
+    --chat--color-primary-shade-50: #6f51eb;
+    --chat--color-primary-shade-100: #6449d6;
+    --chat--color-secondary: #2cb67d;          /* user bubble */
+    --chat--color-white: #0f1115;              /* "white" in dark theme becomes background */
+    --chat--color-light: #11141a;              /* panels / surfaces */
+    --chat--color-light-shade-50: #0d0f14;
+    --chat--color-light-shade-100: #0a0c10;
+    --chat--color-medium: #1b1f2a;             /* borders */
+    --chat--color-dark: #e6eaf2;               /* text on dark */
+    --chat--color-disabled: #7a7f8c;
+    --chat--color-typing: #c0c3cc;
+
+    /* layout */
+    --chat--window--width: 380px;
+    --chat--window--height: 560px;
+    --chat--border-radius: 14px;
+
+    /* header */
+    --chat--header--background: #0c0f14;
+    --chat--header--color: #e6eaf2;
+
+    /* message bubbles */
+    --chat--message--bot--background: #121621;
+    --chat--message--bot--color: #e6eaf2;
+    --chat--message--user--background: var(--chat--color-secondary);
+    --chat--message--user--color: #0a0c10;
+    --chat--message--pre--background: rgba(255,255,255,0.05);
+
+    /* launcher button */
+    --chat--toggle--background: var(--chat--color-primary);
+    --chat--toggle--hover--background: var(--chat--color-primary-shade-50);
+    --chat--toggle--active--background: var(--chat--color-primary-shade-100);
+    --chat--toggle--color: #ffffff;
+    --chat--toggle--size: 64px;
+  }
+
+  /* 3) Position the popup in the corner */
   #n8n-chat-popup {
     position: fixed;
     right: 20px;
     bottom: 20px;
-    width: 380px;   /* popup panel width */
-    height: 560px;  /* popup panel height */
+    width: var(--chat--window--width);
+    height: var(--chat--window--height);
     z-index: 9999;
   }
 </style>
 
-<!-- 3) Mount point -->
+<!-- 4) Mount point -->
 <div id="n8n-chat-popup"></div>
 
-<!-- 4) Load the widget and init in "window" (popup) mode -->
+<!-- 5) Load the widget -->
 <script type="module">
   import { createChat } from 'https://cdn.jsdelivr.net/npm/@n8n/chat/dist/chat.bundle.es.js';
 
   createChat({
     target: '#n8n-chat-popup',
-    mode: 'window',   // floating launcher + popup window
+    mode: 'window', // floating launcher + popup window
     webhookUrl: 'https://mysyree.app.n8n.cloud/webhook/2bee71c0-4f76-44b7-9850-9b6cffcfdc9b/chat',
-    showWelcomeScreen: false,   // disables the default "Hi, I'm Nathan" greeting
-    loadPreviousSession: true   // optional: keep past chat history
+
+    // Kill the default "Nathan" greeting:
+    showWelcomeScreen: false,
+    initialMessages: [],
+
+    // Optional niceties:
+    // loadPreviousSession: true,
+    // enableStreaming: true,
+    // metadata: { source: 'site' },
+    // i18n: { en: { title: '', subtitle: '', inputPlaceholder: 'Type your message…' } }
   });
 </script>
 
