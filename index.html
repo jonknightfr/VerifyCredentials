@@ -35,8 +35,8 @@
 
     <link rel="stylesheet" href="style.css" />
 
-    <link href="https://cdn.jsdelivr.net/npm/@n8n/chat/dist/style.css" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@n8n/chat/dist/style.css" />
 
     <style>
       body {
@@ -384,32 +384,37 @@
     </div>
 
     <!-- Embed the chatbot -->
+
+<!-- 2) A fixed container in the corner -->
+<style>
+  /* Adjust size to taste */
+  #n8n-chat-popup {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    width: 380px;   /* popup panel width */
+    height: 560px;  /* popup panel height */
+    z-index: 9999;
+  }
+</style>
+
+<!-- 3) Mount point -->
+<div id="n8n-chat-popup"></div>
+
+<!-- 4) Load the widget and init in "window" mode (popup) -->
 <script type="module">
   import { createChat } from 'https://cdn.jsdelivr.net/npm/@n8n/chat/dist/chat.bundle.es.js';
 
   createChat({
-    webhookUrl: 'https://mysyree.app.n8n.cloud/webhook/2bee71c0-4f76-44b7-9850-9b6cffcfdc9b',
-    mode: 'window', // floating chat window
-    showWelcomeScreen: true,
-    initialMessages: ['Hello! Ready to explore the future?'],
-    theme: {
-      primaryColor: '#0ff',         // neon cyan for buttons and highlights
-      backgroundColor: '#111',      // dark background
-      textColor: '#0ff',            // neon text
-      inputBackgroundColor: '#222', // input box dark gray
-      inputTextColor: '#0ff',       // input text neon
-      borderColor: '#0ff',          // neon borders
-      fontFamily: 'Orbitron, sans-serif', // futuristic font
-    },
-    i18n: {
-      en: {
-        title: 'NeoBot',
-        subtitle: 'Your futuristic assistant',
-        footer: 'Powered by n8n',
-        getStarted: 'Engage',
-        inputPlaceholder: 'Type your command...',
-      },
-    },
+    target: '#n8n-chat-popup',   // mount into our fixed corner div
+    mode: 'window',              // shows a floating toggle + popup panel
+    webhookUrl: 'https://mysyree.app.n8n.cloud/webhook/2bee71c0-4f76-44b7-9850-9b6cffcfdc9b/chat',
+
+    // Optional niceties:
+    // showWelcomeScreen: false,
+    // loadPreviousSession: true,
+    // enableStreaming: true,     // if you enabled streaming in the node
+    // metadata: { source: 'site' }
   });
 </script>
 
