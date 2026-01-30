@@ -107,7 +107,7 @@
             } else if (/null/.test(match)) {
               cls = "null";
             }
-            if (match.length > 48) match = match.substring(0, 47) + ' ..."';
+            //if (match.length > 48) match = match.substring(0, 47) + ' ..."';
             return '<span class="' + cls + '">' + match + "</span>";
           }
         );
