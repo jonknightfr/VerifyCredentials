@@ -85,25 +85,6 @@
         digitalWalletAppId: "706a8b62-33bd-41d5-a288-33a20b6e6a57"       
       };      
       
-
-      function renderText(text, cls) {
-        const max = 48;
-        const short = text.length > max ? text.slice(0, max - 1) + '…' : text;
-
-        return `
-          <span class="${cls}" 
-          data-full="${text.replace(/"/g, '&quot;')}" 
-          data-short="${short}"
-          onclick="this.textContent = 
-            this.textContent === this.dataset.short 
-              ? this.dataset.full 
-              : this.dataset.short">
-            ${short}
-          </span>
-        `;
-      }
-      
-
       function syntaxHighlight(json) {
         json = json
           .replace(/&/g, "&amp;")
@@ -124,9 +105,8 @@
             } else if (/null/.test(match)) {
               cls = "null";
             }
-            return renderText(text,cls);
-            //if (match.length > 48) match = match.substring(0, 47) + ' ..."';
-            //return '<span class="' + cls + '">' + match + "</span>";
+            if (match.length > 48 && match.includes('svg')) match = match.substring(0, 47) + ' ..."';
+            return '<span class="' + cls + '">' + match + "</span>";
           }
         );
       }
