@@ -39,6 +39,91 @@
       body {
         font-family: "Open Sans";
       }
+
+      .cred-container {
+        background: #fff;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        padding: 16px;
+        margin-top: 12px;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+      }
+
+      .cred-section-title {
+        font-size: 13px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: #c0392b;
+        margin: 16px 0 6px;
+        border-top: 2px solid #c0392b;
+        padding-top: 12px;
+      }
+
+      .cred-table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      .cred-table tr + tr td {
+        border-top: 1px solid #f0f0f0;
+      }
+
+      .cred-key {
+        width: 38%;
+        padding: 7px 10px 7px 0;
+        font-size: 12px;
+        font-weight: 600;
+        color: #555;
+        vertical-align: top;
+        white-space: nowrap;
+      }
+
+      .cred-value {
+        padding: 7px 0;
+        font-size: 13px;
+        color: #222;
+        word-break: break-word;
+      }
+
+      .cred-badge {
+        display: inline-block;
+        padding: 3px 10px;
+        border-radius: 12px;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+      }
+
+      .cred-badge-valid {
+        background: #d4edda;
+        color: #155724;
+      }
+
+      .cred-badge-invalid {
+        background: #f8d7da;
+        color: #721c24;
+      }
+
+      .cred-photo {
+        max-height: 72px;
+        border-radius: 4px;
+        border: 1px solid #ddd;
+      }
+
+      .cred-type-label {
+        font-size: 13px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: #c0392b;
+      }
+
+      .cred-type-value {
+        font-size: 15px;
+        font-weight: 700;
+        color: #222;
+      }
     </style>
 
     <script>
@@ -86,6 +171,68 @@
       };      
       
       
+      function escapeHtml(str) {
+        return String(str)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;");
+      }
+
+      function renderCredential(cred) {
+        var html = '<div class="cred-container">';
+
+        // Meta fields
+        var metaMap = [
+          { field: 'type',               label: 'Credential Type' },
+          { field: 'issuerName',         label: 'Issuer' },
+          { field: 'issuanceDate',       label: 'Issued' },
+          { field: 'verificationStatus', label: 'Status' }
+        ];
+        html += '<table class="cred-table">';
+        metaMap.forEach(function(m) {
+          if (cred[m.field] === undefined) return;
+          var val = cred[m.field];
+          var display;
+          if (m.field === 'verificationStatus') {
+            var cls = val === 'VALID' ? 'cred-badge-valid' : 'cred-badge-invalid';
+            display = '<span class="cred-badge ' + cls + '">' + escapeHtml(val) + '</span>';
+          } else if (m.field === 'issuanceDate') {
+            try { display = escapeHtml(new Date(val).toLocaleString()); } catch(e) { display = escapeHtml(val); }
+          } else {
+            display = escapeHtml(val);
+          }
+          var labelHtml = m.field === 'type'
+            ? '<span class="cred-type-label">' + m.label + '</span>'
+            : m.label;
+          html += '<tr><td class="cred-key">' + labelHtml + '</td><td class="cred-value ' + (m.field === 'type' ? 'cred-type-value' : '') + '">' + display + '</td></tr>';
+        });
+        html += '</table>';
+
+        // Claims section
+        if (cred.data && cred.data.length > 0) {
+          var claims = cred.data.filter(function(d) { return d.key !== 'CardImage'; });
+          if (claims.length > 0) {
+            html += '<div class="cred-section-title">Claims</div>';
+            html += '<table class="cred-table">';
+            claims.forEach(function(item) {
+              var display;
+              if (item.key === 'PHOTO' && item.value &&
+                  (item.value.startsWith('http') || item.value.startsWith('data:image'))) {
+                display = '<img src="' + escapeHtml(item.value) + '" class="cred-photo">';
+              } else {
+                display = escapeHtml(item.value);
+              }
+              html += '<tr><td class="cred-key">' + escapeHtml(item.key) + '</td><td class="cred-value">' + display + '</td></tr>';
+            });
+            html += '</table>';
+          }
+        }
+
+        html += '</div>';
+        return html;
+      }
+
       function syntaxHighlight(json) {
         json = json
           .replace(/&/g, "&amp;")
@@ -237,9 +384,7 @@
                 }
               }
 
-              var str = syntaxHighlight(JSON.stringify(cred, null, 2));
-              document.getElementById("credentialData").innerHTML =
-                '<pre style="white-space:pre-wrap;">' + str + "</pre>";
+              document.getElementById("credentialData").innerHTML = renderCredential(cred);
             }
             document.getElementById("credentialCard").innerHTML = html;
           } else {
